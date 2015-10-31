@@ -14,6 +14,7 @@ use rmrevin\yii\module\Comments;
  * @package rmrevin\yii\module\Comments\models
  *
  * @property integer $id
+ * @property integer $parent_id
  * @property string $entity
  * @property string $from
  * @property string $text
@@ -64,6 +65,7 @@ class Comment extends \yii\db\ActiveRecord
     {
         return [
             'id' => \Yii::t('app', 'ID'),
+			'parent_id' => \Yii::t('app', 'Parent ID'),
             'entity' => \Yii::t('app', 'Entity'),
             'from' => \Yii::t('app', 'Comment author'),
             'text' => \Yii::t('app', 'Text'),
@@ -139,6 +141,14 @@ class Comment extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Comments\Module::instance()->userIdentityClass, ['id' => 'updated_by']);
     }
+
+	/**
+	 * @return queries\CommentQuery
+	 */
+	public function getParent()
+	{
+		return $this->hasOne(Comments\Module::instance()->model('comment'), ['id' => 'parent_id']);
+	}
 
     /**
      * @return queries\CommentQuery

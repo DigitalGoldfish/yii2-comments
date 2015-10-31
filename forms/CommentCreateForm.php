@@ -20,6 +20,7 @@ class CommentCreateForm extends \yii\base\Model
     public $entity;
     public $from;
     public $text;
+	public $parent_id;
 
     /** @var Comments\models\Comment */
     public $Comment;
@@ -33,6 +34,7 @@ class CommentCreateForm extends \yii\base\Model
             $this->entity = $Comment->entity;
             $this->from = $Comment->from;
             $this->text = $Comment->text;
+			$this->parent_id = $Comment->parent_id;
         } elseif (!\Yii::$app->getUser()->getIsGuest()) {
             $User = \Yii::$app->getUser()->getIdentity();
 
@@ -52,7 +54,7 @@ class CommentCreateForm extends \yii\base\Model
         return [
             [['entity', 'text'], 'required'],
             [['entity', 'from', 'text'], 'string'],
-            [['id'], 'integer'],
+            [['id', 'parent_id'], 'integer'],
             [['id'], 'exist', 'targetClass' => $CommentModelClassName, 'targetAttribute' => 'id'],
         ];
     }
@@ -96,6 +98,9 @@ class CommentCreateForm extends \yii\base\Model
         $Comment->entity = $this->entity;
         $Comment->from = $this->from;
         $Comment->text = $this->text;
+		if (isset($this->parent_id)) {
+			$Comment->parent_id = $this->parent_id;
+		}
 
         $result = $Comment->save();
 
