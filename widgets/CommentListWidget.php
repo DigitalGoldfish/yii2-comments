@@ -42,7 +42,7 @@ class CommentListWidget extends \yii\base\Widget
     /** @var array */
     public $sort = [
         'defaultOrder' => [
-            'id' => SORT_ASC,
+            'lineage' => SORT_ASC,
         ],
     ];
 

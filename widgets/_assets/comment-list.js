@@ -20,12 +20,14 @@
   };
 
   $body.on('click', '[data-role="reply"]', function (e) {
-    var comment_id = $(this).closest('[data-comment]').data('comment'),
-      $textarea = $('textarea[data-role="new-comment"]');
+    var comment_id = $(this).closest('[data-comment]').data('comment');
+    var $textarea = $('textarea[data-role="new-comment"]');
+    var $parentIdInput = $('input[data-role="new-comment-parent-id"]');
 
     $textarea
       .focus()
       .val(blockquote(commentsData[comment_id].text));
+    $parentIdInput.val(comment_id);
 
     location.hash = null;
     location.hash = 'commentcreateform?tab=comments';

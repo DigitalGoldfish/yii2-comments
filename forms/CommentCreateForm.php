@@ -20,7 +20,7 @@ class CommentCreateForm extends \yii\base\Model
     public $entity;
     public $from;
     public $text;
-	public $parent_id;
+    public $parent_id;
 
     /** @var Comments\models\Comment */
     public $Comment;
@@ -34,7 +34,7 @@ class CommentCreateForm extends \yii\base\Model
             $this->entity = $Comment->entity;
             $this->from = $Comment->from;
             $this->text = $Comment->text;
-			$this->parent_id = $Comment->parent_id;
+            $this->parent_id = $Comment->parent_id;
         } elseif (!\Yii::$app->getUser()->getIsGuest()) {
             $User = \Yii::$app->getUser()->getIdentity();
 
@@ -80,8 +80,9 @@ class CommentCreateForm extends \yii\base\Model
         $Comment = $this->Comment;
 
         $CommentModelClassName = Comments\Module::instance()->model('comment');
-
+        $isNew = false;
         if (empty($this->id)) {
+            $isNew = true;
             $Comment = \Yii::createObject($CommentModelClassName);
         } elseif ($this->id > 0 && $Comment->id !== $this->id) {
             /** @var Comments\models\Comment $CommentModel */
@@ -98,9 +99,20 @@ class CommentCreateForm extends \yii\base\Model
         $Comment->entity = $this->entity;
         $Comment->from = $this->from;
         $Comment->text = $this->text;
-		if (isset($this->parent_id)) {
-			$Comment->parent_id = $this->parent_id;
-		}
+        if (isset($this->parent_id)) {
+            $Comment->parent_id = $this->parent_id;
+
+            if ($isNew) {
+                $ParentComment = $Comment->parent;
+				if ($ParentComment) {
+					$Comment->lineage = $ParentComment->lineage;
+					$Comment->depth = $ParentComment->depth + 1;
+				}
+            }
+        } else if ($isNew) {
+            $Comment->depth = 0;
+            $Comment->lineage = '';
+        }
 
         $result = $Comment->save();
 
@@ -108,6 +120,27 @@ class CommentCreateForm extends \yii\base\Model
             foreach ($Comment->getErrors() as $attribute => $messages) {
                 foreach ($messages as $mes) {
                     $this->addError($attribute, $mes);
+                }
+            }
+        } else {
+
+            if ($isNew) {
+                // We need the id to correctly set the lineage
+                $Comment->refresh();
+				if (empty($Comment->lineage)) {
+					$Comment->lineage .= $Comment->id;
+				} else {
+					$Comment->lineage .= ('-' . $Comment->id);
+				}
+
+                $result = $Comment->save();
+
+                if ($Comment->hasErrors()) {
+                    foreach ($Comment->getErrors() as $attribute => $messages) {
+                        foreach ($messages as $mes) {
+                            $this->addError($attribute, $mes);
+                        }
+                    }
                 }
             }
         }

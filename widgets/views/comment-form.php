@@ -24,6 +24,7 @@ $Widget = $this->context;
         $form = \yii\widgets\ActiveForm::begin();
 
         echo Html::activeHiddenInput($CommentCreateForm, 'id');
+		echo Html::activeHiddenInput($CommentCreateForm, 'parent_id', ['data-role' => 'new-comment-parent-id']);
 
         if (\Yii::$app->getUser()->getIsGuest()) {
             echo $form->field($CommentCreateForm, 'from')

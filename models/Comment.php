@@ -24,6 +24,9 @@ use rmrevin\yii\module\Comments;
  * @property integer $created_at
  * @property integer $updated_at
  *
+ * @property integer depth
+ * @property string lineage
+ *
  * @property \yii\db\ActiveRecord $author
  * @property \yii\db\ActiveRecord $lastUpdateAuthor
  *
